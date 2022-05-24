@@ -110,7 +110,8 @@ namespace Jewelry.Model
         public string Street { get; set; }
         public int HouseNumber { get; set; }
         
-        
+        [NotMapped]
+        public string Address => $"{PostalCode}, {City}, {Street}, д.{HouseNumber}";
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Order { get; set; }

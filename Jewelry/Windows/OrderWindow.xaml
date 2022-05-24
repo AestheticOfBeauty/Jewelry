@@ -94,7 +94,7 @@
 
                                     <TextBlock Foreground="Black"
                                                Style="{StaticResource DefaultTextBlockStyle}"
-                                               Text="{Binding Description}"
+                                               Text="{Binding Product.Description}"
                                                TextWrapping="Wrap" />
 
                                     <Label Content="{Binding Product.Manufacturer}"
@@ -119,11 +119,10 @@
 
                                     </StackPanel>
 
-                                    <Label Margin="25 0"
-                                           HorizontalAlignment="Left"
+                                    <Label HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
                                            Content="{Binding Product.DiscountAmount}"
-                                           ContentStringFormat="{}{0}%"
+                                           ContentStringFormat="{}Скидка: {0}%"
                                            Foreground="Black"
                                            Style="{StaticResource DefaultLabelStyle}" />
 
@@ -137,7 +136,7 @@
                                            Content="Количество:"
                                            Style="{StaticResource DefaultLabelStyle}" />
 
-                                    <TextBox Width="20"
+                                    <TextBox Width="50"
                                              Margin="5 0"
                                              VerticalAlignment="Center"
                                              Text="{Binding ProductsAmount}">
@@ -148,12 +147,16 @@
 
                                                 <EventSetter Event="PreviewTextInput"
                                                              Handler="TextBox_PreviewTextInput" />
+                                                <EventSetter Event="TextChanged"
+                                                             Handler="TextBox_TextChanged" />
                                             </Style>
                                         </TextBox.Style>
                                     </TextBox>
 
-                                    <Button Margin="5 0"
+                                    <Button Name="DeleteOrderButton"
+                                            Margin="5 0"
                                             VerticalAlignment="Center"
+                                            Click="DeleteOrderButton_Click"
                                             Content="Удалить"
                                             Style="{StaticResource DefaultButtonStyle}" />
 
@@ -165,9 +168,16 @@
                 </ListView.ItemTemplate>
             </ListView>
 
+            <StackPanel Grid.Column="1"
+                        Margin="5 15">
+
+                <Label Content="Пункт выдачи:"
+                       Style="{StaticResource DefaultLabelStyle}" />
+                <ComboBox Name="PickupPointsComboBox"
+                          DisplayMemberPath="Address"
+                          SelectedValuePath="Id" />
+
+            </StackPanel>
         </Grid>
-
-
-
     </Grid>
 </Window>

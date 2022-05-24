@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,9 +39,11 @@ namespace Jewelry.Windows
 
             _messageBus.Receive<UserMessage>(this, message =>
             {
+                Debug.WriteLine(message.User is null);
                 if (_currentUser != null)
                 {
                     _currentUser = message.User;
+                    Debug.WriteLine(_currentUser.Credentials);
                     UserCredentialsLabel.Content = _currentUser.Credentials;
                 }
             });
@@ -60,19 +63,37 @@ namespace Jewelry.Windows
             _orders.Clear();
             OrdersListView.ItemsSource = null;
             OrdersListView.Items.Clear();
-            Debug.WriteLine(_orders.Count);
+            Hide();
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            var regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
 
-            var text = e.Text;
-            int amount;
-            if (int.TryParse(e.Text, out amount))
+        private void DeleteOrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var order = button.DataContext as Order;
+            if (order != null)
             {
-                var dataContext = (sender as TextBox).DataContext as Order;
-                Debug.WriteLine(dataContext.Product.Name);
-                Debug.WriteLine(dataContext.ProductsAmount);
+                _orders.Remove(order);
+                OrdersListView.ItemsSource = _orders;
+                OrdersListView.Items.Refresh();
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = (sender as TextBox);
+            Debug.WriteLine(textBox.Text);
+            if (!string.IsNullOrWhiteSpace(textBox.Text) && int.Parse(textBox.Text) == 0)
+            {
+                var order = textBox.DataContext as Order;
+                _orders.Remove(order);
+                OrdersListView.ItemsSource = _orders;
+                OrdersListView.Items.Refresh();
             }
         }
     }

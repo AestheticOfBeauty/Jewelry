@@ -87,14 +87,10 @@ namespace Jewelry.Pages.Products
 
         public ICommand OpenProductContextMenu => new DelegateCommand<Product>(product =>
         {
-            var order = new Order();
-            order.ProductsAmount += 1;
-            order.Product = product;
-            order.ReceiveCode = _databaseService.GetCloudContext().Orders.Select(o => o.ReceiveCode).Max() + 1;
-            _selectedProducts.Add(order);
+            _selectedProducts.Add(product);
             OrderButton.Visibility = Visibility.Visible;
 
-        }, (product) => _currentUser.Role.Name == "Клиент" || _currentUser is null);
+        }, (product) => (_currentUser is null || _currentUser.Role.Name == "Клиент") && !_selectedProducts.Contains(product));
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             _navigation.Navigate(Dependency.Resolve<AuthenticationPage>());
@@ -183,12 +179,22 @@ namespace Jewelry.Pages.Products
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
+            var orders = new List<Order>();
+            var newReceiveCode = _databaseService.GetCloudContext().Orders.Select(o => o.ReceiveCode).Max() + 1;
+            foreach (Product product in _selectedProducts)
+            {
+                orders.Add(new Order
+                {
+                    ProductsAmount = 1,
+                    Product = product,
+                    ReceiveCode = newReceiveCode
+                });
+            }
             _messageBus.SendTo<OrderWindow>(new UserMessage(_currentUser));
-            _messageBus.SendTo<OrderWindow>(new OrdersMessage(_selectedProducts));
+            _messageBus.SendTo<OrderWindow>(new OrdersMessage(orders));
             Dependency.Resolve<OrderWindow>().Show();
             OrderButton.Visibility = Visibility.Hidden;
             _selectedProducts.Clear();
-            Debug.WriteLine(_selectedProducts.Count);
         }
     }
 
