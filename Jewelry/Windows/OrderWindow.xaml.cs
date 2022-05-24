@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -145,7 +144,7 @@ namespace Jewelry.Windows
 
                 foreach (var order in _orders)
                 {
-                    graphics.DrawString($"* {order.Product.Description}({order.Product.ArticleNumber})",
+                    graphics.DrawString($"* {order.ProductsAmount}x{order.Product.Description}({order.Product.ArticleNumber})",
                         font, XBrushes.Black, new XRect(20, height += 15, page.Width, page.Height), XStringFormats.TopLeft);
                 }
                 
@@ -174,12 +173,24 @@ namespace Jewelry.Windows
                 pdfDocument.Save($@"{_orders.First().OrderDate.Value.Date.ToString("dd-MM-yyyy")}-{_orders.First().ReceiveCode}.pdf");
             }
 
-            _databaseService.GetCloudContext().Orders.AddRange(_orders);
-            _databaseService.GetCloudContext().SaveChanges();
-            MessageBox.Show("Заказ успешно оформлен",
+            try
+            {
+                foreach (Order order in _orders)
+                {
+                    _databaseService.GetCloudContext().Orders.Add(order);
+                }
+                _databaseService.GetCloudContext().SaveChanges();
+                MessageBox.Show("Заказ успешно оформлен",
                             "Заказ",
                             MessageBoxButton.OK,
                             MessageBoxImage.Information);
+                Hide();
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.WriteLine(ex.Source);
+                
+            }
         }
     }
 }

@@ -48,6 +48,7 @@ namespace Jewelry.Windows
                 DescriptionTextBox.Text = _selectedProduct.Description;
                 _fullImagePath = _selectedProduct.FullPhotoSource;
                 _safeFileName = _selectedProduct.PhotoSource;
+                DeleteButton.Visibility = Visibility.Visible;
             });
             _eventBus.Subscribe<AddingNewProductEvent>(@event =>
             {
@@ -67,6 +68,7 @@ namespace Jewelry.Windows
                 DescriptionTextBox.Text = string.Empty;
                 _fullImagePath = string.Empty;
                 _safeFileName = string.Empty;
+                DeleteButton.Visibility = Visibility.Collapsed;
             });
             CategoryComboBox.ItemsSource = new List<string>
             {

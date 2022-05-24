@@ -71,6 +71,7 @@ namespace Jewelry.Pages.Products
             {
                 UserCredentialsLabel.Content = "Учётная запись Гостя";
                 AddProductButton.Visibility = Visibility.Collapsed;
+                _currentUser = null;
             });
 
             _eventBus.Subscribe<ProductChangedEvent>(@event =>
@@ -192,7 +193,7 @@ namespace Jewelry.Pages.Products
                     Product = product,
                     ReceiveCode = newReceiveCode,
                     OrderStatus = _databaseService.GetCloudContext().OrderStatuses.First(os => os.Name == "Новый"),
-                    User = _currentUser
+                    User = _currentUser is null ? null : _databaseService.GetCloudContext().Users.Find(_currentUser.Id)
                 });
             }
             _messageBus.SendTo<OrderWindow>(new UserMessage(_currentUser));

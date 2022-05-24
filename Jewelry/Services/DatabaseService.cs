@@ -8,6 +8,11 @@ namespace Jewelry.Services
         private JewelryContext _cloudContext;
         private JewelryContext _localContext;
 
+        public DatabaseService()
+        {
+            GetCloudContext();
+            GetLocalContext();
+        }
         public JewelryContext GetCloudContext()
         {
             if (_cloudContext == null)

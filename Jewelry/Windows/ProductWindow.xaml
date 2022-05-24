@@ -139,13 +139,13 @@
             <StackPanel HorizontalAlignment="Right"
                         Orientation="Horizontal">
 
-                <Button Name="sdf"
+                <Button Name="SaveButton"
                         Margin="0 5"
                         Click="SaveButton_Click"
                         Content="Сохранить"
                         Style="{StaticResource DefaultButtonStyle}" />
 
-                <Button Name="sdfd"
+                <Button Name="DeleteButton"
                         Margin="10 5"
                         Click="DeleteButton_Click"
                         Content="Удалить"
