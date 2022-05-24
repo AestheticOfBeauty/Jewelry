@@ -1,21 +1,13 @@
 ﻿using Jewelry.Messages;
 using Jewelry.Model;
 using Jewelry.Services;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Jewelry.Windows
 {
@@ -38,12 +30,10 @@ namespace Jewelry.Windows
             _imageService = imageService;
 
             _messageBus.Receive<UserMessage>(this, message =>
-            {
-                Debug.WriteLine(message.User is null);
-                if (_currentUser != null)
+            {                 
+                if (message.User != null)
                 {
                     _currentUser = message.User;
-                    Debug.WriteLine(_currentUser.Credentials);
                     UserCredentialsLabel.Content = _currentUser.Credentials;
                 }
             });
@@ -54,6 +44,7 @@ namespace Jewelry.Windows
                 _orders.Distinct();
                 OrdersListView.ItemsSource = _orders;
             });
+            PickupPointsComboBox.ItemsSource = _databaseService.GetCloudContext().PickupPoints.ToList();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -63,6 +54,7 @@ namespace Jewelry.Windows
             _orders.Clear();
             OrdersListView.ItemsSource = null;
             OrdersListView.Items.Clear();
+            UserCredentialsLabel.Content = "Гость";
             Hide();
         }
 

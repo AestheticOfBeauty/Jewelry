@@ -93,6 +93,9 @@ namespace Jewelry.Pages.Products
         }, (product) => (_currentUser is null || _currentUser.Role.Name == "Клиент") && !_selectedProducts.Contains(product));
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
+            _currentUser = null;
+            _selectedProducts.Clear();
+            OrderButton.Visibility = Visibility.Hidden;
             _navigation.Navigate(Dependency.Resolve<AuthenticationPage>());
         }
         private void TextFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
