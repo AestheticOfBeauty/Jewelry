@@ -190,7 +190,9 @@ namespace Jewelry.Pages.Products
                 {
                     ProductsAmount = 1,
                     Product = product,
-                    ReceiveCode = newReceiveCode
+                    ReceiveCode = newReceiveCode,
+                    OrderStatus = _databaseService.GetCloudContext().OrderStatuses.First(os => os.Name == "Новый"),
+                    User = _currentUser
                 });
             }
             _messageBus.SendTo<OrderWindow>(new UserMessage(_currentUser));

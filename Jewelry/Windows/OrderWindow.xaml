@@ -177,6 +177,23 @@
                           DisplayMemberPath="Address"
                           SelectedValuePath="Id" />
 
+                <StackPanel Margin="0 5"
+                            Orientation="Horizontal">
+
+                    <Label Content="Сумма заказа:"
+                           Style="{StaticResource DefaultLabelStyle}" />
+
+                    <Label Name="OverallPriceLabel"
+                           Margin="5 0"
+                           Style="{StaticResource DefaultLabelStyle}" />
+
+                </StackPanel>
+
+                <Button Margin="0 5"
+                        Click="OrderButton_Click"
+                        Content="Заказать"
+                        Style="{StaticResource DefaultButtonStyle}" />
+
             </StackPanel>
         </Grid>
     </Grid>
