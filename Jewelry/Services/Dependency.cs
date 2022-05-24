@@ -1,5 +1,4 @@
-﻿using Jewelry.Messages;
-using Jewelry.Pages.Authentication;
+﻿using Jewelry.Pages.Authentication;
 using Jewelry.Pages.Orders;
 using Jewelry.Pages.Products;
 using Jewelry.Windows;
@@ -21,6 +20,7 @@ namespace Jewelry.Services
             services.AddSingleton<ProductsPage>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<ProductWindow>();
+            services.AddSingleton<OrderWindow>();
             
             services.AddTransient<CaptchaService>();
             services.AddSingleton<DatabaseService>();

@@ -24,7 +24,7 @@ namespace Jewelry.Services
                 var cloudStorageConnectionString = ConfigurationManager.ConnectionStrings["JewelryContextLocal"].ConnectionString;
                 _localContext = new JewelryContext(cloudStorageConnectionString);
             }
-            return _cloudContext;
+            return _localContext;
         }
     }
 }

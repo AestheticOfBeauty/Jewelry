@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +25,7 @@ namespace Jewelry.Pages.Products
         private readonly MessageBus _messageBus;
         private readonly ImageService _imageService;
         private User _currentUser;
+        private List<Product> _selectedProducts = new List<Product>();
 
         public ProductsPage(PageService navigation, DatabaseService databaseService,
             EventBus eventBus, ImageService imageService, MessageBus messageBus)
@@ -52,24 +54,17 @@ namespace Jewelry.Pages.Products
 
             _messageBus.Receive<UserMessage>(this, message =>
             {
-                _currentUser = message.User;
+                _currentUser = message.User;                
             });
 
             _eventBus.Subscribe<LoginAsUserEvent>(@event =>
             {
                 _currentUser = _databaseService.GetLocalContext().Users.Find(_currentUser.Id);
                 UserCredentialsLabel.Content = _currentUser.Credentials;
+
                 if (_currentUser.Role.Name == "Администратор")
                 {
-
-                }
-                else if (_currentUser.Role.Name == "Менеджер")
-                {
-
-                }
-                else
-                {
-                    //AddProductButton.Visibility = Visibility.Collapsed;
+                    AddProductButton.Visibility = Visibility.Visible;
                 }
             });
             _eventBus.Subscribe<LoginAsGuestEvent>(@event =>
@@ -84,17 +79,22 @@ namespace Jewelry.Pages.Products
             });
 
             var products = _databaseService.GetCloudContext().Products.ToList();
-            products.ForEach(product => product.Image = product.PhotoSource is null ?
+            products.ForEach(product => product.Image = !File.Exists(product.FullPhotoSource) ?
                 _imageService.GetImageFromPath($@"{AppDomain.CurrentDomain.BaseDirectory}Images\picture.png")
                 : _imageService.GetImageFromPath($@"{AppDomain.CurrentDomain.BaseDirectory}Images\{product.PhotoSource}"));
             ProductsListView.ItemsSource = products;
-            
         }
 
         public ICommand OpenProductContextMenu => new DelegateCommand<Product>(product =>
         {
-            
-        }, (product) => _currentUser.Role.Name == "Клиент");
+            var order = new Order();
+            order.ProductsAmount += 1;
+            order.Product = product;
+            order.ReceiveCode = _databaseService.GetCloudContext().Orders.Select(o => o.ReceiveCode).Max() + 1;
+            _selectedProducts.Add(order);
+            OrderButton.Visibility = Visibility.Visible;
+
+        }, (product) => _currentUser.Role.Name == "Клиент" || _currentUser is null);
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             _navigation.Navigate(Dependency.Resolve<AuthenticationPage>());
@@ -160,21 +160,35 @@ namespace Jewelry.Pages.Products
             CurrentProductsRationToActualLabel.Content = $"{products.Count()} из {productsAmount}";
             return products.ToList();
         }
-
         private void AddProductButton_Click(object sender, RoutedEventArgs e)
         {
-            _eventBus.Publish(new AddingNewProductEvent());
-            Dependency.Resolve<ProductWindow>().Show();
-        }
-
-        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var selectedProduct = ProductsListView.SelectedItem as Product;
-            if (selectedProduct != null)
+            if (_currentUser.Role.Name == "Администратор")
             {
-                _messageBus.SendTo<ProductWindow>(new ProductMessage(selectedProduct));
+                _eventBus.Publish(new AddingNewProductEvent());
                 Dependency.Resolve<ProductWindow>().Show();
             }
+        }
+        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (_currentUser.Role.Name == "Администратор")
+            {
+                var selectedProduct = ProductsListView.SelectedItem as Product;
+                if (selectedProduct != null)
+                {
+                    _messageBus.SendTo<ProductWindow>(new ProductMessage(selectedProduct));
+                    Dependency.Resolve<ProductWindow>().Show();
+                }
+            }
+        }
+
+        private void OrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            _messageBus.SendTo<OrderWindow>(new UserMessage(_currentUser));
+            _messageBus.SendTo<OrderWindow>(new OrdersMessage(_selectedProducts));
+            Dependency.Resolve<OrderWindow>().Show();
+            OrderButton.Visibility = Visibility.Hidden;
+            _selectedProducts.Clear();
+            Debug.WriteLine(_selectedProducts.Count);
         }
     }
 
@@ -189,7 +203,6 @@ namespace Jewelry.Pages.Products
         public Discount Discount { get; set; }
         public string Name { get; set; }
     }
-
     public enum Discount
     {
         AllDiscounts = 0,
@@ -209,7 +222,6 @@ namespace Jewelry.Pages.Products
         public ListSortDirection ListSortDirection { get; set; }
         public string Name { get; set; }
     }
-    
     public enum PriceSorting
     {
         Ascending = 0,

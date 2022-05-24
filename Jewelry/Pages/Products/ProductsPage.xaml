@@ -102,9 +102,21 @@
                           SelectionChanged="SortingComboBox_SelectionChanged"
                           Style="{StaticResource DefaultComboBoxStyle}" />
 
-                <Label Name="CurrentProductsRationToActualLabel"
-                       Margin="5 0 0 0"
-                       Style="{StaticResource DefaultLabelStyle}" />
+                <StackPanel HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+
+                    <Label Name="CurrentProductsRationToActualLabel"
+                           Margin="5 0 0 0"
+                           Style="{StaticResource DefaultLabelStyle}" />
+
+                    <Button Name="OrderButton"
+                            Margin="10 0"
+                            Click="OrderButton_Click"
+                            Content="К заказу"
+                            Style="{StaticResource DefaultButtonStyle}"
+                            Visibility="Hidden" />
+
+                </StackPanel>
 
             </UniformGrid>
 
@@ -206,7 +218,8 @@
                     HorizontalAlignment="Right"
                     Click="AddProductButton_Click"
                     Content="Добавить товар"
-                    Style="{StaticResource DefaultButtonStyle}" />
+                    Style="{StaticResource DefaultButtonStyle}"
+                    Visibility="Collapsed" />
         </Grid>
     </Grid>
 </Page>

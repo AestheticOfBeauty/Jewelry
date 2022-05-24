@@ -196,11 +196,9 @@ namespace Jewelry.Windows
                 _selectedProduct.DiscountAmount = short.Parse(DiscountAmountTextBox.Text);
                 _selectedProduct.Description = description;
 
-                if (_selectedProduct.FullPhotoSource != _fullImagePath)
+                if (_selectedProduct.FullPhotoSource != _fullImagePath
+                    && _safeFileName != _selectedProduct.PhotoSource)
                 {
-                    Debug.WriteLine(_selectedProduct.PhotoSource);
-                    Debug.WriteLine(_fullImagePath);
-                    Debug.WriteLine(_selectedProduct.FullPhotoSource);
                     _imageService.SaveImage(imagePath, _selectedProduct.FullPhotoSource);
                 }
 
@@ -208,10 +206,8 @@ namespace Jewelry.Windows
                 context.Products.AddOrUpdate(_selectedProduct);
                 context.SaveChanges();
                 _eventBus.Publish(new ProductChangedEvent());
-                Debug.WriteLine("hiding");
                 Hide();
             }
-
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)

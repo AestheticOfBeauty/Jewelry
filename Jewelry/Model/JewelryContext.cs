@@ -122,7 +122,7 @@ namespace Jewelry.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Product()
         {
-            this.Order = new HashSet<Order>();
+            this.Orders = new HashSet<Order>();
         }
 
         [Key]
@@ -140,6 +140,8 @@ namespace Jewelry.Model
         public string Supplier { get; set; }
 
         [NotMapped]
+        public int Amount { get; set; }
+        [NotMapped]
         public string FullPhotoSource => $@"{AppDomain.CurrentDomain.BaseDirectory}Images\{PhotoSource}";
         [NotMapped]
         public double ActualCost => Cost - Cost * DiscountAmount / 100;
@@ -151,7 +153,7 @@ namespace Jewelry.Model
             (SolidColorBrush)new BrushConverter().ConvertFrom("#FFFFFF");
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Order> Order { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 
     [Table("orderstatuses")]

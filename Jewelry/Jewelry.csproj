@@ -129,6 +129,7 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="Messages\IMessage.cs" />
     <Compile Include="Messages\ProductMessage.cs" />
+    <Compile Include="Messages\OrdersMessage.cs" />
     <Compile Include="Messages\UserMessage.cs" />
     <Compile Include="Services\CaptchaService.cs" />
     <Compile Include="Services\DatabaseService.cs" />
@@ -139,6 +140,9 @@
     <Compile Include="Services\MessageBus.cs" />
     <Compile Include="Services\MessageSubscriber.cs" />
     <Compile Include="Services\PageService.cs" />
+    <Compile Include="Windows\OrderWindow.xaml.cs">
+      <DependentUpon>OrderWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ProductWindow.xaml.cs">
       <DependentUpon>ProductWindow.xaml</DependentUpon>
     </Compile>
@@ -163,6 +167,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Products\ProductsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\OrderWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
