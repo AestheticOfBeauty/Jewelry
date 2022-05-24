@@ -18,20 +18,16 @@ namespace Jewelry.Windows
     public partial class OrderWindow : Window
     {
         private readonly DatabaseService _databaseService;
-        private readonly EventBus _eventBus;
         private readonly MessageBus _messageBus;
-        private readonly ImageService _imageService;
         private User _currentUser;
         private List<Order> _orders = new List<Order>();
 
 
-        public OrderWindow(DatabaseService databaseService, EventBus eventBus, MessageBus messageBus, ImageService imageService)
+        public OrderWindow(DatabaseService databaseService, MessageBus messageBus)
         {
             InitializeComponent();
             _databaseService = databaseService;
-            _eventBus = eventBus;
             _messageBus = messageBus;
-            _imageService = imageService;
 
             _messageBus.Receive<UserMessage>(this, message =>
             {                 
@@ -108,6 +104,15 @@ namespace Jewelry.Windows
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
+            if (PickupPointsComboBox.SelectedItem is null)
+            {
+                MessageBox.Show("Выберите пункт выдачи",
+                                "Ошибка ввода",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                return;
+            }
+
             _orders.ForEach(order =>
             {
                 order.OrderDate = DateTime.Now.Date;
@@ -156,12 +161,25 @@ namespace Jewelry.Windows
                 graphics.DrawString($"Номер заказа: JEW{_orders.First().ReceiveCode}", font, XBrushes.Black,
                     new XRect(20, height += 15, page.Width, page.Height), XStringFormats.TopLeft);
 
+                if (_currentUser != null)
+                {
+                    graphics.DrawString($"Покупатель: {_currentUser.Credentials}", font, XBrushes.Black,
+                    new XRect(20, height += 15, page.Width, page.Height), XStringFormats.TopLeft);
+                }
+
                 graphics.DrawString($"Код получения: {_orders.First().ReceiveCode}", new XFont("Comic Sans MS", 20, XFontStyle.Bold), XBrushes.Black,
                     new XRect(20, height += 20, page.Width, page.Height),
                     XStringFormats.TopCenter);
 
                 pdfDocument.Save($@"{_orders.First().OrderDate.Value.Date.ToString("dd-MM-yyyy")}-{_orders.First().ReceiveCode}.pdf");
             }
+
+            _databaseService.GetCloudContext().Orders.AddRange(_orders);
+            _databaseService.GetCloudContext().SaveChanges();
+            MessageBox.Show("Заказ успешно оформлен",
+                            "Заказ",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
         }
     }
 }
